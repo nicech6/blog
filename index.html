@@ -170,7 +170,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Home
+            Startseite
           </a>
         </li>
       
@@ -180,7 +180,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archives
+            Archiv
           </a>
         </li>
       
@@ -200,7 +200,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
             
-            About
+            Über
           </a>
         </li>
       
@@ -266,7 +266,7 @@
             <span class="post-meta-item-icon">
               <i class="fa fa-calendar-o"></i>
             </span>
-            <span class="post-meta-item-text">Posted on</span>
+            <span class="post-meta-item-text">Veröffentlicht am</span>
             <time itemprop="dateCreated" datetime="2017-05-22T21:34:56+08:00" content="2017-05-22">
               2017-05-22
             </time>
@@ -307,6 +307,27 @@
         
           
             <p>两行代码轻松实现RecyclerView适配器</p>
+<blockquote>
+<p>描述：适用于比较简单的Recyclerview，当然复杂的布局肯定另写一个class比较完美~~</p>
+</blockquote>
+<h3 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h3><blockquote>
+<p>1) In your root build.gradle:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">repositories &#123;</div><div class="line">    jcenter()</div><div class="line">    maven &#123; url <span class="string">'https://jitpack.io'</span> &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>2) In your library/build.gradle add:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">compile <span class="string">'com.github.icuihai:gm-recyclerview:1.0.1'</span></div></pre></td></tr></table></figure></p>
+</blockquote>
+<p>###实现过程</p>
+<ul>
+<li><p>Adapter</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">GMRvAdapter</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">RecyclerView</span>.<span class="title">Adapter</span>&lt;<span class="title">GMRvViewHolder</span>&gt; </span>&#123;</div><div class="line">    <span class="keyword">protected</span> Context mContext;</div><div class="line">    <span class="keyword">protected</span> <span class="keyword">int</span> mLayoutId;</div><div class="line">    <span class="keyword">protected</span> List&lt;T&gt; mDatas;</div><div class="line">    <span class="keyword">protected</span> LayoutInflater mInflater;</div><div class="line">    <span class="keyword">private</span> OnItemClickListener mOnItemClickListener;</div><div class="line">    <span class="keyword">private</span> OnItemLongClickListener mOnItemLongClickListener;</div><div class="line">	<span class="comment">// 构造函数</span></div><div class="line">	<span class="comment">// mLayoutId :子item布局文件id</span></div><div class="line">	<span class="comment">// List&lt;T&gt;mDatas ：list集合，泛型可以是Module，</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">GMRvAdapter</span><span class="params">(Context mContext, <span class="keyword">int</span> mLayoutId, List&lt;T&gt; mDatas)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.mInflater = LayoutInflater.from(mContext);</div><div class="line">        <span class="keyword">this</span>.mContext = mContext;</div><div class="line">        <span class="keyword">this</span>.mLayoutId = mLayoutId;</div><div class="line">        <span class="keyword">this</span>.mDatas = mDatas;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onBindViewHolder</span><span class="params">(GMRvViewHolder holder, <span class="keyword">final</span> <span class="keyword">int</span> position)</span> </span>&#123;</div><div class="line">	    <span class="comment">// 抽象方法</span></div><div class="line">        convert(holder, mDatas.get(position), position);</div><div class="line">        <span class="comment">// item点击事件</span></div><div class="line">        <span class="keyword">if</span> (mOnItemClickListener != <span class="keyword">null</span>) &#123;</div><div class="line">            holder.itemView.setOnClickListener(<span class="keyword">new</span> View.OnClickListener() &#123;</div><div class="line">                <span class="meta">@Override</span></div><div class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View view)</span> </span>&#123;</div><div class="line">                    mOnItemClickListener.onItemClick(view, mDatas.get(position), position);</div><div class="line">                &#125;</div><div class="line">            &#125;);</div><div class="line">        &#125;</div><div class="line">        <span class="comment">// item长按事件</span></div><div class="line">        <span class="keyword">if</span> (mOnItemLongClickListener != <span class="keyword">null</span>) &#123;</div><div class="line">            holder.itemView.setOnLongClickListener(<span class="keyword">new</span> View.OnLongClickListener() &#123;</div><div class="line">                <span class="meta">@Override</span></div><div class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onLongClick</span><span class="params">(View view)</span> </span>&#123;</div><div class="line">                    mOnItemLongClickListener.onItemLongClick(view, mDatas.get(position), position);</div><div class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">                &#125;</div><div class="line">            &#125;);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">convert</span><span class="params">(GMRvViewHolder easyRvViewHolder, T t, <span class="keyword">int</span> position)</span></span>;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> GMRvViewHolder <span class="title">onCreateViewHolder</span><span class="params">(ViewGroup parent, <span class="keyword">int</span> viewType)</span> </span>&#123;</div><div class="line">        View view = mInflater.inflate(mLayoutId, parent, <span class="keyword">false</span>);</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> GMRvViewHolder(view);</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getItemCount</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (mDatas == <span class="keyword">null</span>) &#123;</div><div class="line">            mDatas = <span class="keyword">new</span> ArrayList&lt;T&gt;();</div><div class="line">            <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> mDatas.size();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 清空数据</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">clearAll</span><span class="params">()</span> </span>&#123;</div><div class="line">        mDatas.clear();</div><div class="line">        notifyDataSetChanged();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 设置RV的item点击监听</div><div class="line">     *</div><div class="line">     * <span class="doctag">@param</span> onItemClickListener</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setOnItemClickListener</span><span class="params">(OnItemClickListener onItemClickListener)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.mOnItemClickListener = onItemClickListener;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setOnItemLongClickListener</span><span class="params">(OnItemLongClickListener onItemLongClickListener)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.mOnItemLongClickListener = onItemLongClickListener;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">OnItemClickListener</span>&lt;<span class="title">T</span>&gt; </span>&#123;</div><div class="line">        <span class="function"><span class="keyword">void</span> <span class="title">onItemClick</span><span class="params">(View view, T data, <span class="keyword">int</span> position)</span></span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">OnItemLongClickListener</span>&lt;<span class="title">T</span>&gt; </span>&#123;</div><div class="line">        <span class="function"><span class="keyword">void</span> <span class="title">onItemLongClick</span><span class="params">(View view, T data, <span class="keyword">int</span> position)</span></span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>Holder</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GMRvViewHolder</span> <span class="keyword">extends</span> <span class="title">RecyclerView</span>.<span class="title">ViewHolder</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> SparseArray&lt;View&gt; mViews;</div><div class="line">    <span class="keyword">private</span> View mConvertView;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">GMRvViewHolder</span><span class="params">(View itemView)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>(itemView);</div><div class="line">        mViews = <span class="keyword">new</span> SparseArray&lt;&gt;();</div><div class="line">        mConvertView = itemView;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 通过viewId获取控件</div><div class="line">     */</div><div class="line"></div><div class="line">    <span class="keyword">public</span> &lt;T extends View&gt; <span class="function">T <span class="title">getView</span><span class="params">(<span class="keyword">int</span> viewId)</span> </span>&#123;</div><div class="line">        View view = mViews.get(viewId);</div><div class="line">        <span class="keyword">if</span> (view == <span class="keyword">null</span>) &#123;</div><div class="line">            view = mConvertView.findViewById(viewId);</div><div class="line">            mViews.put(viewId, view);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> (T) view;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>关于我</p>
+<blockquote>
+<p>weibo : <a href="https://www.weibo.com/icuihai" target="_blank" rel="external">https://www.weibo.com/icuihai</a><br>gmail : icuihai@gmail.com</p>
+</blockquote>
+</li>
+</ul>
 
           
         
@@ -369,7 +390,7 @@
             <span class="post-meta-item-icon">
               <i class="fa fa-calendar-o"></i>
             </span>
-            <span class="post-meta-item-text">Posted on</span>
+            <span class="post-meta-item-text">Veröffentlicht am</span>
             <time itemprop="dateCreated" datetime="2017-05-22T21:06:34+08:00" content="2017-05-22">
               2017-05-22
             </time>
@@ -480,7 +501,7 @@
           <div class="site-state-item site-state-posts">
             <a href="/archives">
               <span class="site-state-item-count">2</span>
-              <span class="site-state-item-name">posts</span>
+              <span class="site-state-item-name">Artikel</span>
             </a>
           </div>
 
@@ -527,7 +548,7 @@
 </div>
 
 <div class="powered-by">
-  Powered by <a class="theme-link" href="http://hexo.io">Hexo</a>
+  Erstellt mit  <a class="theme-link" href="http://hexo.io">Hexo</a>
 </div>
 
 <div class="powered-by">
