@@ -84,16 +84,16 @@
 
 
 
-<meta name="description" content="由于项目中需要实现类似微信朋友圈九图的功能，所以九自己动手写了一个">
+<meta name="description" content="###仿微信朋友圈九宫格图片控件  相信朋友们们对九宫格图片在熟悉不过了，由于项目中用到了，抽出了一点时间整理了以下，以此来记录学习的过程~~~ 如何使用如何使用（只需要两步，炒鸡简单~~~） #####1. 写一个类继承NIneImgView，实现三个抽象方法；  displayOneImage： 顾名思义只有一张图片调用该方法加载图片(当然可以随便使用你最喜欢的图片加载方式，比如Glide,P">
 <meta property="og:type" content="article">
 <meta property="og:title" content="仿微信朋友圈九宫格图片控件">
 <meta property="og:url" content="http://icuihai.com/2017/05/22/仿微信朋友圈九宫格图片控件/index.html">
 <meta property="og:site_name" content="icuihai">
-<meta property="og:description" content="由于项目中需要实现类似微信朋友圈九图的功能，所以九自己动手写了一个">
-<meta property="og:updated_time" content="2017-05-22T13:21:42.942Z">
+<meta property="og:description" content="###仿微信朋友圈九宫格图片控件  相信朋友们们对九宫格图片在熟悉不过了，由于项目中用到了，抽出了一点时间整理了以下，以此来记录学习的过程~~~ 如何使用如何使用（只需要两步，炒鸡简单~~~） #####1. 写一个类继承NIneImgView，实现三个抽象方法；  displayOneImage： 顾名思义只有一张图片调用该方法加载图片(当然可以随便使用你最喜欢的图片加载方式，比如Glide,P">
+<meta property="og:updated_time" content="2017-05-24T14:03:33.071Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="仿微信朋友圈九宫格图片控件">
-<meta name="twitter:description" content="由于项目中需要实现类似微信朋友圈九图的功能，所以九自己动手写了一个">
+<meta name="twitter:description" content="###仿微信朋友圈九宫格图片控件  相信朋友们们对九宫格图片在熟悉不过了，由于项目中用到了，抽出了一点时间整理了以下，以此来记录学习的过程~~~ 如何使用如何使用（只需要两步，炒鸡简单~~~） #####1. 写一个类继承NIneImgView，实现三个抽象方法；  displayOneImage： 顾名思义只有一张图片调用该方法加载图片(当然可以随便使用你最喜欢的图片加载方式，比如Glide,P">
 
 
 
@@ -300,7 +300,308 @@
       
 
       
-        <p>由于项目中需要实现类似微信朋友圈九图的功能，所以九自己动手写了一个</p>
+        <p>###仿微信朋友圈九宫格图片控件</p>
+<blockquote>
+<p>相信朋友们们对九宫格图片在熟悉不过了，由于项目中用到了，抽出了一点时间整理了以下，以此来记录学习的过程~~~</p>
+<h4 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h4><p>如何使用（只需要两步，炒鸡简单~~~）</p>
+<p>#####1. 写一个类继承NIneImgView，实现三个抽象方法；</p>
+<ul>
+<li>displayOneImage： 顾名思义只有一张图片调用该方法加载图片(当然可以随便使用你最喜欢的图片加载方式，比如Glide,PIcasso等)，</li>
+<li>displayImage： 不是一张图片时调用该方法加载图片</li>
+<li>onClickImage： 图片点击监听 <h5 id="2-在XML控件中全路径写该控件，比如我写的时ExampleImgView"><a href="#2-在XML控件中全路径写该控件，比如我写的时ExampleImgView" class="headerlink" title="2.在XML控件中全路径写该控件，比如我写的时ExampleImgView"></a>2.在XML控件中全路径写该控件，比如我写的时ExampleImgView</h5>&lt;com.cuihai.nineimgview.ExampleImgView<pre><code>android:id=&quot;@+id/img&quot;
+android:layout_width=&quot;match_parent&quot;
+android:layout_height=&quot;wrap_content&quot; /&gt;
+</code></pre><h4 id="代码分析"><a href="#代码分析" class="headerlink" title="代码分析"></a>代码分析</h4></li>
+<li>NineImgView<br>主要就是这个NineImgView这个类，先上代码（可能有点长~~）<br>``` java<br>public abstract class NineImgView extends ViewGroup {<br>  private static final float DEFUALT_SPACING = 3f;<br>  private static final int MAX_COUNT = 9;</li>
+</ul>
+</blockquote>
+<pre><code>protected Context mContext;
+private float mSpacing = DEFUALT_SPACING;
+private int mColumns;
+private int mRows;
+private int mTotalWidth;
+private int mSingleWidth;
+
+private boolean mIsShowAll = false;
+private boolean mIsFirst = true;
+private List&lt;String&gt; mUrlList = new ArrayList&lt;&gt;();
+
+public NineImgView(Context context) {
+    super(context);
+    init(context);
+}
+
+public NineImgView(Context context, AttributeSet attrs) {
+    super(context, attrs);
+    TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.NineImgViewLayout);
+
+    mSpacing = typedArray.getDimension(R.styleable.NineImgViewLayout_sapcing, DEFUALT_SPACING);
+    typedArray.recycle();
+    init(context);
+}
+
+private void init(Context context) {
+    mContext = context;
+    // 数据为0时，即没有图片的时不心显示。
+    if (getListSize(mUrlList) == 0) {
+        setVisibility(GONE);
+    }
+}
+
+@Override
+protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+}
+
+@Override
+protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+// 整个控件的宽度
+    mTotalWidth = right - left;
+    mSingleWidth = (int) ((mTotalWidth - mSpacing * (3 - 1)) / 3);
+    if (mIsFirst) {
+        notifyDataSetChanged();
+        mIsFirst = false;
+    }
+}
+
+/**
+ * 设置间隔
+ *
+ * @param spacing
+ */
+public void setSpacing(float spacing) {
+    mSpacing = spacing;
+}
+
+/**
+ * 设置是否显示所有图片（超过最大数时）
+ *
+ * @param isShowAll
+ */
+public void setIsShowAll(boolean isShowAll) {
+    mIsShowAll = isShowAll;
+}
+
+public void setUrlList(List&lt;String&gt; urlList) {
+    if (getListSize(urlList) == 0) {
+        setVisibility(GONE);
+        return;
+    }
+    setVisibility(VISIBLE);
+
+    mUrlList.clear();
+    mUrlList.addAll(urlList);
+
+    if (!mIsFirst) {
+        notifyDataSetChanged();
+    }
+}
+
+public void notifyDataSetChanged() {
+    post(new TimerTask() {
+        @Override
+        public void run() {
+            refresh();
+        }
+    });
+}
+
+private void refresh() {
+    removeAllViews();
+    int size = getListSize(mUrlList);
+    if (size &gt; 0) {
+        setVisibility(VISIBLE);
+    } else {
+        setVisibility(GONE);
+    }
+
+    if (size == 1) {
+        String url = mUrlList.get(0);
+        ImageView imageView = createImageView(0, url);
+
+        //避免在ListView中一张图未加载成功时，布局高度受其他item影响
+        LayoutParams params = getLayoutParams();
+        params.height = mSingleWidth;
+        setLayoutParams(params);
+        imageView.layout(0, 0, mSingleWidth, mSingleWidth);
+
+        boolean isShowDefualt = displayOneImage(imageView, url, mTotalWidth);
+        if (isShowDefualt) {
+            layoutImageView(imageView, 0, url, false);
+        } else {
+            addView(imageView);
+        }
+        return;
+    }
+
+    generateChildrenLayout(size);
+    layoutParams();
+
+    for (int i = 0; i &lt; size; i++) {
+        String url = mUrlList.get(i);
+        ImageView imageView;
+        if (!mIsShowAll) {
+            if (i &lt; MAX_COUNT - 1) {
+                imageView = createImageView(i, url);
+                layoutImageView(imageView, i, url, false);
+            } else { //第9张时
+                if (size &lt;= MAX_COUNT) {//刚好第9张
+                    imageView = createImageView(i, url);
+                    layoutImageView(imageView, i, url, false);
+                } else {//超过9张
+                    imageView = createImageView(i, url);
+                    layoutImageView(imageView, i, url, true);
+                    break;
+                }
+            }
+        } else {
+            imageView = createImageView(i, url);
+            layoutImageView(imageView, i, url, false);
+        }
+    }
+}
+
+private void layoutParams() {
+    int singleHeight = mSingleWidth;
+
+    //根据子view数量确定高度
+    LayoutParams params = getLayoutParams();
+    params.height = (int) (singleHeight * mRows + mSpacing * (mRows - 1));
+    setLayoutParams(params);
+}
+
+private ImageView createImageView(final int i, final String url) {
+    ImageView imageView = new ImageView(mContext);
+    imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+    imageView.setOnClickListener(new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            onClickImage(i, url, mUrlList);
+        }
+    });
+    return imageView;
+}
+
+/**
+ * @param imageView
+ * @param url
+ * @param showNumFlag 是否在最大值的图片上显示还有未显示的图片张数
+ */
+private void layoutImageView(ImageView imageView, int i, String url, boolean showNumFlag) {
+    final int singleWidth = (int) ((mTotalWidth - mSpacing * (3 - 1)) / 3);
+    int singleHeight = singleWidth;
+
+    int[] position = findPosition(i);
+    int left = (int) ((singleWidth + mSpacing) * position[1]);
+    int top = (int) ((singleHeight + mSpacing) * position[0]);
+    int right = left + singleWidth;
+    int bottom = top + singleHeight;
+
+    imageView.layout(left, top, right, bottom);
+
+    addView(imageView);
+    if (showNumFlag) {//添加超过最大显示数量的文本
+        int overCount = getListSize(mUrlList) - MAX_COUNT;
+        if (overCount &gt; 0) {
+            float textSize = 30;
+            final TextView textView = new TextView(mContext);
+            textView.setText(&quot;+&quot; + String.valueOf(overCount));
+            textView.setTextColor(Color.WHITE);
+            textView.setPadding(0, singleHeight / 2 - getFontHeight(textSize), 0, 0);
+            textView.setTextSize(textSize);
+            textView.setGravity(Gravity.CENTER);
+            textView.setBackgroundColor(Color.BLACK);
+            textView.getBackground().setAlpha(120);
+
+            textView.layout(left, top, right, bottom);
+            addView(textView);
+        }
+    }
+    displayImage(imageView, url);
+}
+
+private int[] findPosition(int childNum) {
+    int[] position = new int[2];
+    for (int i = 0; i &lt; mRows; i++) {
+        for (int j = 0; j &lt; mColumns; j++) {
+            if ((i * mColumns + j) == childNum) {
+                position[0] = i;//行
+                position[1] = j;//列
+                break;
+            }
+        }
+    }
+    return position;
+}
+
+/**
+ * 根据图片个数确定行列数量
+ *
+ * @param length
+ */
+private void generateChildrenLayout(int length) {
+    if (length &lt;= 3) {
+        mRows = 1;
+        mColumns = length;
+    } else if (length &lt;= 6) {
+        mRows = 2;
+        mColumns = 3;
+        if (length == 4) {
+            mColumns = 2;
+        }
+    } else {
+        mColumns = 3;
+        if (mIsShowAll) {
+            mRows = length / 3;
+            int b = length % 3;
+            if (b &gt; 0) {
+                mRows++;
+            }
+        } else {
+            mRows = 3;
+        }
+    }
+
+}
+
+protected void setOneImageLayoutParams(ImageView imageView, int width, int height) {
+    imageView.setLayoutParams(new LayoutParams(width, height));
+    imageView.layout(0, 0, width, height);
+
+    LayoutParams params = getLayoutParams();
+</code></pre><p>//        params.width = width;<br>        params.height = height;<br>        setLayoutParams(params);<br>    }</p>
+<pre><code>private int getListSize(List&lt;String&gt; list) {
+    if (list == null || list.size() == 0) {
+        return 0;
+    }
+    return list.size();
+}
+
+private int getFontHeight(float fontSize) {
+    Paint paint = new Paint();
+    paint.setTextSize(fontSize);
+    Paint.FontMetrics fm = paint.getFontMetrics();
+    return (int) Math.ceil(fm.descent - fm.ascent);
+}
+
+/**
+ * @param imageView
+ * @param url
+ * @param parentWidth 父控件宽度
+ * @return true 代表按照九宫格默认大小显示，false 代表按照自定义宽高显示
+ */
+protected abstract boolean displayOneImage(ImageView imageView, String url, int parentWidth);
+
+protected abstract void displayImage(ImageView imageView, String url);
+
+protected abstract void onClickImage(int position, String url, List&lt;String&gt; urlList);
+</code></pre><p>}<br>``` </p>
+<ul>
+<li>关于我<blockquote>
+<p>weibo : <a href="https://www.weibo.com/icuihai" target="_blank" rel="external">https://www.weibo.com/icuihai</a><br>gmail : icuihai@gmail.com</p>
+</blockquote>
+</li>
+</ul>
 
       
     </div>
@@ -436,7 +737,7 @@
               
             
             
-              <p class="post-toc-empty">Dieser Artikel hat kein Inhaltsverzeichnis</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#如何使用"><span class="nav-number">1.</span> <span class="nav-text">如何使用</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#2-在XML控件中全路径写该控件，比如我写的时ExampleImgView"><span class="nav-number">1.1.</span> <span class="nav-text">2.在XML控件中全路径写该控件，比如我写的时ExampleImgView</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#代码分析"><span class="nav-number">2.</span> <span class="nav-text">代码分析</span></a></li></ol></div>
             
           </div>
         </section>
