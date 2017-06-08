@@ -84,16 +84,19 @@
 
 
 
-<meta name="description" content="记录学习的历程">
+<meta name="description" content="Kotlin语法糖 Kotlin 语言是一种新的静态类型编程语言，可运行于 JVM 环境同时也能用来开发 Android 应用  准备工作####1.安装Kotlin插件 (本篇文章基于AS，IDE类似) ####2.新建.kt文件 撸码 变量声明12private var unicode: String? = nullprivate var studentId: Int? = null 类方法1">
 <meta property="og:type" content="article">
-<meta property="og:title" content="EventBus源码理解">
-<meta property="og:url" content="http://icuihai.com/2016/09/20/EventBus源码理解/index.html">
+<meta property="og:title" content="Kotlin语法糖">
+<meta property="og:url" content="http://icuihai.com/2017/06/08/Kotlin语法糖/index.html">
 <meta property="og:site_name" content="icuihai">
-<meta property="og:description" content="记录学习的历程">
-<meta property="og:updated_time" content="2017-05-24T14:40:56.732Z">
+<meta property="og:description" content="Kotlin语法糖 Kotlin 语言是一种新的静态类型编程语言，可运行于 JVM 环境同时也能用来开发 Android 应用  准备工作####1.安装Kotlin插件 (本篇文章基于AS，IDE类似) ####2.新建.kt文件 撸码 变量声明12private var unicode: String? = nullprivate var studentId: Int? = null 类方法1">
+<meta property="og:image" content="http://icuihai.com/2017/06/08/Kotlin语法糖/1-3-1.png">
+<meta property="og:image" content="http://icuihai.com/2017/06/08/Kotlin语法糖/1-4-3.png">
+<meta property="og:updated_time" content="2017-06-08T15:13:31.658Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="EventBus源码理解">
-<meta name="twitter:description" content="记录学习的历程">
+<meta name="twitter:title" content="Kotlin语法糖">
+<meta name="twitter:description" content="Kotlin语法糖 Kotlin 语言是一种新的静态类型编程语言，可运行于 JVM 环境同时也能用来开发 Android 应用  准备工作####1.安装Kotlin插件 (本篇文章基于AS，IDE类似) ####2.新建.kt文件 撸码 变量声明12private var unicode: String? = nullprivate var studentId: Int? = null 类方法1">
+<meta name="twitter:image" content="http://icuihai.com/2017/06/08/Kotlin语法糖/1-3-1.png">
 
 
 
@@ -111,7 +114,7 @@
   };
 </script>
 
-  <title> EventBus源码理解 | icuihai </title>
+  <title> Kotlin语法糖 | icuihai </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
@@ -241,7 +244,7 @@
             
             
               
-                EventBus源码理解
+                Kotlin语法糖
               
             
           </h1>
@@ -253,8 +256,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">Veröffentlicht am</span>
-            <time itemprop="dateCreated" datetime="2016-09-20T22:40:27+08:00" content="2016-09-20">
-              2016-09-20
+            <time itemprop="dateCreated" datetime="2017-06-08T23:12:39+08:00" content="2017-06-08">
+              2017-06-08
             </time>
           </span>
 
@@ -268,7 +271,7 @@
 
           
           
-             <span id="/2016/09/20/EventBus源码理解/" class="leancloud_visitors" data-flag-title="EventBus源码理解">
+             <span id="/2017/06/08/Kotlin语法糖/" class="leancloud_visitors" data-flag-title="Kotlin语法糖">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -290,7 +293,39 @@
       
 
       
-        
+        <h2 id="Kotlin语法糖"><a href="#Kotlin语法糖" class="headerlink" title="Kotlin语法糖"></a>Kotlin语法糖</h2><blockquote>
+<p>Kotlin 语言是一种新的静态类型编程语言，可运行于 JVM 环境同时也能用来开发 Android 应用</p>
+</blockquote>
+<h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><p>####1.安装Kotlin插件 (本篇文章基于AS，IDE类似)<br><img src="./1-3-1.png" alt="Alt text"></p>
+<p>####2.新建.kt文件<br><img src="./1-4-3.png" alt="Alt text"></p>
+<h3 id="撸码"><a href="#撸码" class="headerlink" title="撸码"></a>撸码</h3><blockquote>
+<p>变量声明<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> var unicode: String? = <span class="keyword">null</span></div><div class="line"><span class="keyword">private</span> var studentId: Int? = <span class="keyword">null</span></div></pre></td></tr></table></figure></p>
+<p>类方法<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">class MainActivity : AppCompatActivity() &#123;</div><div class="line"></div><div class="line">    override fun onCreate(savedInstanceState: Bundle?) &#123;</div><div class="line">        super.onCreate(savedInstanceState)</div><div class="line">        setContentView(R.layout.activity_main)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>静态方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">companion object &#123;</div><div class="line">       <span class="function">fun <span class="title">start</span><span class="params">(id: Int)</span> </span>&#123;&#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure></p>
+</blockquote>
+<ul>
+<li>方法如果没有方法体，{} 可省略<blockquote>
+<p>for循环(0到10++)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 升序</span></div><div class="line"> <span class="keyword">for</span> (i in <span class="number">0</span>..<span class="number">10</span>)&#123;</div><div class="line">            等于java中 <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</div><div class="line">            </div><div class="line">        &#125;</div><div class="line">        &#125;</div><div class="line">         <span class="comment">// 降序</span></div><div class="line"> <span class="keyword">for</span> (i in <span class="number">10</span> downTo <span class="number">2</span>) &#123;</div><div class="line">同理 </div><div class="line">        &#125;</div></pre></td></tr></table></figure>
+</blockquote>
+</li>
+</ul>
+<blockquote>
+<p>if 表达式<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function">fun <span class="title">max</span><span class="params">(a: Int, b: Int)</span>: Int </span>&#123;</div><div class="line">    <span class="keyword">if</span> (a &gt; b)</div><div class="line">        <span class="keyword">return</span> a</div><div class="line">    <span class="keyword">else</span></div><div class="line">        <span class="keyword">return</span> b</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>when表达式 (替代switch表达式 )<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">when (id) &#123;</div><div class="line">        <span class="number">0</span> -&gt; &#123;</div><div class="line">        &#125;</div><div class="line">        <span class="number">1</span> -&gt; &#123;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<p>while表达式 (与java一致 )<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">while</span> (a &lt; <span class="number">10</span>) &#123;</div><div class="line">            a += b</div><div class="line">        &#125;</div></pre></td></tr></table></figure></p>
+<p>Lambda表达式<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">val Lambda: (Int, Int) -&gt; Int = &#123;x,y -&gt; x+y&#125;</div></pre></td></tr></table></figure></p>
+<p>主构造方法 ( 如果主构造哦函数没有注解或可见性说明，则 constructor 关键字是可以省略：)<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">class Student constructor(name: String) &#123;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>get set方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">var id: Int = <span class="number">0</span> <span class="comment">// 初始化后默认已经实现了get.set方法</span></div></pre></td></tr></table></figure></p>
+<p>接口定义<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">interface</span> <span class="title">MyInterface</span> </span>&#123;</div><div class="line">    <span class="function">fun <span class="title">success</span><span class="params">()</span></span></div><div class="line">    fun <span class="title">failed</span><span class="params">()</span> &#123;</div><div class="line">      <span class="comment">// optional body</span></div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<p>实现接口<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">class test: MyInterface &#123;</div><div class="line">   override fun failed() &#123;</div><div class="line">      // body</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>继承<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">open class a&#123;</div><div class="line">      父类必须是 使用 open关键字来描述  </div><div class="line">   &#125;</div><div class="line">   class b: a() &#123;</div><div class="line">      </div><div class="line">   &#125;</div></pre></td></tr></table></figure></p>
+<p>创建类的实例<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">var test = test()</div><div class="line"><span class="comment">// Kotlin没有new关键字</span></div></pre></td></tr></table></figure></p>
+</blockquote>
+<ul>
+<li>未完待续</li>
+</ul>
+
       
     </div>
 
@@ -319,13 +354,13 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2017/05/24/字符串Unicode转解码/" rel="next" title="字符串Unicode转解码">
+                <i class="fa fa-chevron-left"></i> 字符串Unicode转解码
+              </a>
+            
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/12/22/Recyclerview适配器简单封装/" rel="prev" title="Recyclerview适配器简单封装">
-                Recyclerview适配器简单封装 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -425,7 +460,7 @@
               
             
             
-              <p class="post-toc-empty">Dieser Artikel hat kein Inhaltsverzeichnis</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Kotlin语法糖"><span class="nav-number">1.</span> <span class="nav-text">Kotlin语法糖</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#准备工作"><span class="nav-number">1.1.</span> <span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#撸码"><span class="nav-number">1.2.</span> <span class="nav-text">撸码</span></a></li></ol></li></ol></div>
             
           </div>
         </section>
