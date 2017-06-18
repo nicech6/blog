@@ -1017,6 +1017,124 @@ android:layout_height=&quot;wrap_content&quot; /&gt;
             
               
                 
+                <a class="post-title-link" href="/2016/10/20/Android事件分发理解/" itemprop="url">
+                  Android事件分发理解
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
+            <time itemprop="dateCreated" datetime="2016-10-20T21:29:36+08:00" content="2016-10-20">
+              2016-10-20
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+             <span id="/2016/10/20/Android事件分发理解/" class="leancloud_visitors" data-flag-title="Android事件分发理解">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">visitors </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Android事件分发理解"><a href="#Android事件分发理解" class="headerlink" title="Android事件分发理解"></a>Android事件分发理解</h2><blockquote>
+<p>相信大家在工作或者面试的过程中，都会遇到一个很常见的问题，Android事件分发机制。这篇文章结合自己的理解来对事件分发机制探讨一下.</p>
+<h3 id="View"><a href="#View" class="headerlink" title="View"></a>View</h3><p>首先我们看下View的的 dispatchTouchEvent方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;  </div><div class="line">    <span class="keyword">if</span> (mOnTouchListener != <span class="keyword">null</span> &amp;&amp; (mViewFlags &amp; ENABLED_MASK) == ENABLED &amp;&amp;  </div><div class="line">            mOnTouchListener.onTouch(<span class="keyword">this</span>, event)) &#123;  </div><div class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;  </div><div class="line">    &#125;  </div><div class="line">    <span class="keyword">return</span> onTouchEvent(event);  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这个方法非常的简洁，只有短短几行代码！我们可以看到，在这个方法内，首先是进行了一个判断，如果mOnTouchListener != null，(mViewFlags &amp; ENABLED_MASK) == ENABLED和mOnTouchListener.onTouch(this, event)这三个条件都为真，就返回true，否则就去执行onTouchEvent(event)方法并返回。<br>第一个条件：也就是说只要我们给控件注册了touch事件，mOnTouchListener就一定被赋值了<br>第二个条件：mViewFlags &amp; ENABLED_MASK) == ENABLED是判断当前点击的控件是否是enable的，按钮默认都是enable的<br>第三个条件：mOnTouchListener.onTouch(this, event)，其实也就是去回调控件注册touch事件时的onTouch方法。也就是说如果我们在onTouch方法里返回true，就会让这三个条件全部成立，从而整个方法直接返回true。如果我们在onTouch方法里返回false，就会再去执行onTouchEvent(event)方法<br>通过以上代码，我们可以分析出onTouch方法是先于onClick方法执行的。如果以上三个条件没有同时满足，则该方法返回false，执行onTouchEvent方法，由于源码太长没有列出来。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setOnClickListener</span><span class="params">(OnClickListener l)</span> </span>&#123;  </div><div class="line">    <span class="keyword">if</span> (!isClickable()) &#123;  </div><div class="line">        setClickable(<span class="keyword">true</span>);  </div><div class="line">    &#125;  </div><div class="line">    mOnClickListener = l;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>当我们通过调用setOnClickListener方法来给控件注册一个点击事件时，就会给mOnClickListener赋值。然后每当控件被点击时，都会在performClick()方法里回调被点击控件的onClick方法。简单的说，就是当dispatchTouchEvent在进行事件分发的时候，只有前一个action返回true，才会触发后一个action。</p>
+<h4 id="onTouch和onTouchEvent有什么区别，又该如何使用？"><a href="#onTouch和onTouchEvent有什么区别，又该如何使用？" class="headerlink" title="onTouch和onTouchEvent有什么区别，又该如何使用？"></a>onTouch和onTouchEvent有什么区别，又该如何使用？</h4><p>从源码中可以看出，这两个方法都是在View的dispatchTouchEvent中调用的，onTouch优先于onTouchEvent执行。如果在onTouch方法中通过返回true将事件消费掉，onTouchEvent将不会再执行。</p>
+<p>另外需要注意的是，onTouch能够得到执行需要两个前提条件，第一mOnTouchListener的值不能为空，第二当前点击的控件必须是enable的。因此如果你有一个控件是非enable的，那么给它注册onTouch事件将永远得不到执行。对于这一类控件，如果我们想要监听它的touch事件，就必须通过在该控件中重写onTouchEvent方法来实现</p>
+<h3 id="ViewGroup"><a href="#ViewGroup" class="headerlink" title="ViewGroup"></a>ViewGroup</h3><p>ViewGroup就是一组View的集合，它包含很多的子View和子VewGroup<br>只要你触摸了任何控件，就一定会调用该控件的dispatchTouchEvent方法。这个说法没错，只不过还不完整而已。实际情况是，当你点击了某个控件，首先会去调用该控件所在布局的dispatchTouchEvent方法，然后在布局的dispatchTouchEvent方法中找到被点击的相应控件，再去调用该控件的dispatchTouchEvent方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onInterceptTouchEvent</span><span class="params">(MotionEvent ev)</span> </span>&#123;  </div><div class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>然后dispatchTouchEvent方法<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent ev)</span> </span>&#123;  </div><div class="line">    <span class="keyword">final</span> <span class="keyword">int</span> action = ev.getAction();  </div><div class="line">    <span class="keyword">final</span> <span class="keyword">float</span> xf = ev.getX();  </div><div class="line">    <span class="keyword">final</span> <span class="keyword">float</span> yf = ev.getY();  </div><div class="line">    <span class="keyword">final</span> <span class="keyword">float</span> scrolledXFloat = xf + mScrollX;  </div><div class="line">    <span class="keyword">final</span> <span class="keyword">float</span> scrolledYFloat = yf + mScrollY;  </div><div class="line">    <span class="keyword">final</span> Rect frame = mTempRect;  </div><div class="line">    <span class="keyword">boolean</span> disallowIntercept = (mGroupFlags &amp; FLAG_DISALLOW_INTERCEPT) != <span class="number">0</span>;  </div><div class="line">    <span class="keyword">if</span> (action == MotionEvent.ACTION_DOWN) &#123;  </div><div class="line">        <span class="keyword">if</span> (mMotionTarget != <span class="keyword">null</span>) &#123;  </div><div class="line">            mMotionTarget = <span class="keyword">null</span>;  </div><div class="line">        &#125;  </div><div class="line">        <span class="keyword">if</span> (disallowIntercept || !onInterceptTouchEvent(ev)) &#123;  </div><div class="line">            ev.setAction(MotionEvent.ACTION_DOWN);  </div><div class="line">            <span class="keyword">final</span> <span class="keyword">int</span> scrolledXInt = (<span class="keyword">int</span>) scrolledXFloat;  </div><div class="line">            <span class="keyword">final</span> <span class="keyword">int</span> scrolledYInt = (<span class="keyword">int</span>) scrolledYFloat;  </div><div class="line">            <span class="keyword">final</span> View[] children = mChildren;  </div><div class="line">            <span class="keyword">final</span> <span class="keyword">int</span> count = mChildrenCount;  </div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = count - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;  </div><div class="line">                <span class="keyword">final</span> View child = children[i];  </div><div class="line">                <span class="keyword">if</span> ((child.mViewFlags &amp; VISIBILITY_MASK) == VISIBLE  </div><div class="line">                        || child.getAnimation() != <span class="keyword">null</span>) &#123;  </div><div class="line">                    child.getHitRect(frame);  </div><div class="line">                    <span class="keyword">if</span> (frame.contains(scrolledXInt, scrolledYInt)) &#123;  </div><div class="line">                        <span class="keyword">final</span> <span class="keyword">float</span> xc = scrolledXFloat - child.mLeft;  </div><div class="line">                        <span class="keyword">final</span> <span class="keyword">float</span> yc = scrolledYFloat - child.mTop;  </div><div class="line">                        ev.setLocation(xc, yc);  </div><div class="line">                        child.mPrivateFlags &amp;= ~CANCEL_NEXT_UP_EVENT;  </div><div class="line">                        <span class="keyword">if</span> (child.dispatchTouchEvent(ev))  &#123;  </div><div class="line">                            mMotionTarget = child;  </div><div class="line">                            <span class="keyword">return</span> <span class="keyword">true</span>;  </div><div class="line">                        &#125;  </div><div class="line">                    &#125;  </div><div class="line">                &#125;  </div><div class="line">            &#125;  </div><div class="line">        &#125;  </div><div class="line">    &#125;  </div><div class="line">    <span class="keyword">boolean</span> isUpOrCancel = (action == MotionEvent.ACTION_UP) ||  </div><div class="line">            (action == MotionEvent.ACTION_CANCEL);  </div><div class="line">    <span class="keyword">if</span> (isUpOrCancel) &#123;  </div><div class="line">        mGroupFlags &amp;= ~FLAG_DISALLOW_INTERCEPT;  </div><div class="line">    &#125;  </div><div class="line">    <span class="keyword">final</span> View target = mMotionTarget;  </div><div class="line">    <span class="keyword">if</span> (target == <span class="keyword">null</span>) &#123;  </div><div class="line">        ev.setLocation(xf, yf);  </div><div class="line">        <span class="keyword">if</span> ((mPrivateFlags &amp; CANCEL_NEXT_UP_EVENT) != <span class="number">0</span>) &#123;  </div><div class="line">            ev.setAction(MotionEvent.ACTION_CANCEL);  </div><div class="line">            mPrivateFlags &amp;= ~CANCEL_NEXT_UP_EVENT;  </div><div class="line">        &#125;  </div><div class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.dispatchTouchEvent(ev);  </div><div class="line">    &#125;  </div><div class="line">    <span class="keyword">if</span> (!disallowIntercept &amp;&amp; onInterceptTouchEvent(ev)) &#123;  </div><div class="line">        <span class="keyword">final</span> <span class="keyword">float</span> xc = scrolledXFloat - (<span class="keyword">float</span>) target.mLeft;  </div><div class="line">        <span class="keyword">final</span> <span class="keyword">float</span> yc = scrolledYFloat - (<span class="keyword">float</span>) target.mTop;  </div><div class="line">        mPrivateFlags &amp;= ~CANCEL_NEXT_UP_EVENT;  </div><div class="line">        ev.setAction(MotionEvent.ACTION_CANCEL);  </div><div class="line">        ev.setLocation(xc, yc);  </div><div class="line">        <span class="keyword">if</span> (!target.dispatchTouchEvent(ev)) &#123;  </div><div class="line">        &#125;  </div><div class="line">        mMotionTarget = <span class="keyword">null</span>;  </div><div class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;  </div><div class="line">    &#125;  </div><div class="line">    <span class="keyword">if</span> (isUpOrCancel) &#123;  </div><div class="line">        mMotionTarget = <span class="keyword">null</span>;  </div><div class="line">    &#125;  </div><div class="line">    <span class="keyword">final</span> <span class="keyword">float</span> xc = scrolledXFloat - (<span class="keyword">float</span>) target.mLeft;  </div><div class="line">    <span class="keyword">final</span> <span class="keyword">float</span> yc = scrolledYFloat - (<span class="keyword">float</span>) target.mTop;  </div><div class="line">    ev.setLocation(xc, yc);  </div><div class="line">    <span class="keyword">if</span> ((target.mPrivateFlags &amp; CANCEL_NEXT_UP_EVENT) != <span class="number">0</span>) &#123;  </div><div class="line">        ev.setAction(MotionEvent.ACTION_CANCEL);  </div><div class="line">        target.mPrivateFlags &amp;= ~CANCEL_NEXT_UP_EVENT;  </div><div class="line">        mMotionTarget = <span class="keyword">null</span>;  </div><div class="line">    &#125;  </div><div class="line">    <span class="keyword">return</span> target.dispatchTouchEvent(ev);  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>方法比较长，只看重点，能看到一个for循环遍历了当前ViewGroup下的所有子View，然后在第24行判断当前遍历的View是不是正在点击的View，如果是的话就会进入到该条件判断的内部，然后在第29行调用了该View的dispatchTouchEvent</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ol>
+<li>Android事件分发是先传递到ViewGroup，再由ViewGroup传递到View的。</li>
+<li>在ViewGroup中可以通过onInterceptTouchEvent方法对事件传递进行拦截，onInterceptTouchEvent方法返回true代表不允许事件继续向子View传递，返回false代表不对事件进行拦截，默认返回false。</li>
+<li>子View中如果将传递的事件消费掉，ViewGroup中将无法接收到任何事件。</li>
+</ol>
+</blockquote>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/09/20/EventBus源码理解/" itemprop="url">
                   EventBus源码理解
                 </a>
@@ -1255,7 +1373,7 @@ android:layout_height=&quot;wrap_content&quot; /&gt;
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-count">7</span>
               <span class="site-state-item-name">posts</span>
             </a>
           </div>
